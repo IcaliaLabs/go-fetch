@@ -1,0 +1,48 @@
+# Ignore version control files:
+.git/
+.gitignore
+
+# Ignore docker and environment files:
+**/*Dockerfile
+docker-compose.yml
+**/*.env
+.dockerignore
+
+# Ignore log files:
+log/*.log
+
+# Ignore temporary files:
+tmp/
+
+# Ignore test files:
+.rspec
+Guardfile
+spec/
+
+# Ignore OS artifacts:
+**/.DS_Store
+
+.rspec
+
+# Ignore bundler cache:
+.bundle/
+
+# Ignore bash / IRB / Byebug history files
+.bash_history
+.byebug_hist
+.byebug_history
+.pry_history
+.guard_history
+
+# Ignore the examples folder:
+examples/
+
+# Ignore the deployment folders:
+config/deploy
+
+# Ignore spring binstubs - we're not ignoring bin/rails nor bin/rake:
+bin/rspec
+config/spring.rb
+
+# Ignore test coverage reports
+coverage/

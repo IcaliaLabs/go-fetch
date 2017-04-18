@@ -1,0 +1,33 @@
+version: '2.1'
+
+volumes:
+  test_repos_data:
+  test_code_worktree:
+
+services:
+  app: &go_fetch_app
+    image: icalialabs/go-fetch:development
+    build:
+      dockerfile: dev.Dockerfile
+      context: .
+    volumes:
+      # Mount our app code directory (".") into our app containers at the "/usr/src/app" folder:
+      - .:/usr/src/app
+
+      - test_repos_data:/repos
+      - test_code_worktree:/worktree
+
+    stdin_open: true
+
+    # Enable sending signals (CTRL+C, CTRL+P + CTRL+Q) into the container:
+    tty: true
+    command: help
+
+  gem:
+    <<: *go_fetch_app
+    working_dir: /usr/src/lib
+    volumes:
+      # Mount our app code directory (".") into our app containers at the "/usr/src/app" folder:
+      - .:/usr/src/lib
+      # Add the docker socket to enable docker in docker:
+      - /var/run/docker.sock:/var/run/docker.sock

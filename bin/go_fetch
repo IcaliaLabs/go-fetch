@@ -1,0 +1,20 @@
+#!/usr/bin/env ruby
+
+require 'bundler'
+Bundler.setup(:default)
+
+require 'thor'
+require_relative '../lib/git_patching_for_sibyl'
+
+class GoFetch < Thor
+  desc "version", "Displays the Go Fetch! version"
+  def version
+    data = { version: '0.0.1', git_version: `git version`.split.last }
+    JSON.dump data, STDOUT
+    STDOUT.puts
+  end
+end
+
+Dir['./tasks/**/*.rb'].sort.each { |f| require f }
+
+GoFetch.start ARGV

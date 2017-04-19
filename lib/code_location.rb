@@ -32,7 +32,7 @@ class CodeLocation
 
   def to_s
     return "#{path}:O#{offset}" if offset?
-    range = begin? ? line_column_string(begin_line, begin_column) : ''
+    range = begin? ? self.class.line_column_string(begin_line, begin_column) : ''
     range << "..#{self.class.line_column_string(end_line, end_column)}" if end?
     return path unless range != ''
     "#{path}:#{range}"

@@ -10,10 +10,10 @@ class GoFetch < Thor
   option :github
   option :user
   option :password
-  
+
   desc "version", "Displays the Go Fetch! version"
   def version
-    data = { version: '0.0.1', git_version: `git version`.split.last }
+    data = { version: '0.0.2', git_version: `git version`.split.last }
     JSON.dump data, STDOUT
     STDOUT.puts
   end

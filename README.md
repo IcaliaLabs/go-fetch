@@ -122,6 +122,9 @@ that sometimes weird projects end up being used by more people than we imagined.
 
 ## TODO
 
+* [URGENT] Add option to lock the worktree (`git worktree lock`) on the `checkout` command.
+* [URGENT] Add command to unlock a worktree (`git worktree unlock`).
+* [URGENT] Add command to prune the worktree list (`git worktree prune`) (Maybe unlock + prune?)
 * Be able to write files/content into a worktree :)
 * Be able to commit and **push** changes back to origin :O
 * Migrate the code to Go Lang :D

@@ -4,58 +4,48 @@ class GoFetch < Thor
   option :github
   option :user
   option :password
+  option :treeish
 
-  desc "checkout [OPTIONS] WORKTREE_NAME TREEISH", "say hello to checkout"
-  def checkout(worktree_name, treeish)
-    worktree_path = Pathname.new File.join('/', worktree_name)
-    repo_uri = extract_repo_uri_with_credentials
-    repo_path = extract_repo_path_from repo_uri
-    repo = get_local_repo repo_path
-    checkout_worktree repo, repo_uri, worktree_path, treeish
-    checkout_data = { treeish: treeish, commit_sha: repo.gtree(treeish).log(1).last.sha }
-    JSON.dump checkout_data, STDOUT
-    STDOUT.puts
+  desc "checkout [OPTIONS] WORKTREE [TREEISH]", "Performs a checkout of code in the given worktree"
+  method_option :fetch, type: :boolean
+  method_option :prune, type: :boolean
+  def checkout(worktree_name, treeish = nil)
+    with_exit_code = 0
+    fetch_from_origin if !!options[:fetch]
+    checkout_worktree worktree_name, treeish
+    JSON.dump last_commit_data(treeish), STDOUT
+  rescue => run_error
+    result = {
+      error_class: run_error.class.name,
+      error_message: run_error.message,
+      error_backtrace: run_error.backtrace
+    }
+    JSON.dump result, STDERR
+    with_exit_code = 666
   ensure
-    repo.remotes.map(&:remove)
+    STDOUT.puts
+    exit with_exit_code
   end
 
   no_commands do
-    def checkout_worktree(repo, repo_uri, worktree_path, treeish)
-      cleanup_workdir repo, worktree_path
-      fetch_and_prune repo, repo_uri
-      repo.add_worktree worktree_path, treeish
+    def checkout_worktree(worktree_name, treeish = nil)
+      treeish ||= options[:treeish]
+      worktree_path = Pathname.new File.join('/', worktree_name)
+      FileUtils.rm_rf worktree_path
+      local_repo.add_worktree worktree_path, treeish
     end
 
-    def cleanup_workdir(repo, destination)
-      FileUtils.rm_rf destination
-    end
-
-    def fetch_and_prune(repo, repo_uri)
-      origin = repo.add_remote :origin, repo_uri
-      origin.fetch prune: true
-    end
-
-    def extract_repo_uri_with_credentials
-      return extract_github_repo_uri if options.key?(:github)
-    end
-
-    def extract_github_repo_uri
-      URI("https://github.com/#{options[:github]}.git").tap do |uri|
-        uri.user     = options[:user]     if options.key? :user
-        uri.password = options[:password] if options.key? :password
-      end
-    end
-
-    def extract_repo_path_from(repo_uri)
-      path = repo_uri.path
-      extension = File.extname(path)
-      full_path = File.join('/', 'repos', repo_uri.host, *path.gsub(extension, '')[1..-1].split('/'))
-      Pathname.new full_path
-    end
-
-    def get_local_repo(repo_path)
-      return Git.open(repo_path, bare: true) if repo_path.exist?
-      Git.init(repo_path, bare: true)
+    def last_commit_data(treeish = nil)
+      treeish ||= options[:treeish]
+      last_commit = local_repo.gtree(treeish).log(1).last
+      last_commit_data = {
+        sha: last_commit.sha,
+        author_name: last_commit.author.name,
+        author_email: last_commit.author.email,
+        message: last_commit.message
+      }
+      last_commit_data[:parent_sha] = last_commit.parent.sha if !!last_commit.parent
+      last_commit_data
     end
   end
 end

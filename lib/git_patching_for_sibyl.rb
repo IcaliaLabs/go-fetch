@@ -51,7 +51,7 @@ module Git
       arr_opts << '--delete' if opts[:delete]
       arr_opts << name
       arr_opts << url
-      arr_opts << old_url if old_url.present?
+      arr_opts << old_url if !!old_url
 
       command 'remote', arr_opts
     end
@@ -77,7 +77,7 @@ module Git
 
     def worktree_lock(path, opts = {})
       arr_opts = ['lock']
-      arr_opts << '--reason' << opts[:reason] if opts[:reason].present?
+      arr_opts << '--reason' << opts[:reason] if !!opts[:reason]
       arr_opts << path
 
       command 'worktree', arr_opts
@@ -87,7 +87,7 @@ module Git
       arr_opts = ['prune']
       arr_opts << '--dry-run' if opts[:n] || opts[:dry_run]
       arr_opts << '--verbose' if opts[:v] || opts[:verbose]
-      arr_opts << '--expire' << opts[:expire] if opts[:expire].present?
+      arr_opts << '--expire' << opts[:expire] if !!opts[:expire]
 
       command 'worktree', arr_opts
     end
@@ -150,7 +150,7 @@ module Git
 
       base.lib.worktree_list.split("\n").each do |line|
         workdir = line.split.first
-        @worktrees[workdir] = Git::Worktree.new base, workdir if workdir.present?
+        @worktrees[workdir] = Git::Worktree.new base, workdir if !!workdir
       end
     end
 

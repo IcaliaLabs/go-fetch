@@ -54,11 +54,11 @@ flag - You can use all of the `fetch` command options & flags:
 ```
 docker run --rm \
  --volume test-repos:/repos \
- --volume example-1:/example-1 \
+ --volume example-2:/example-2 \
  icalialabs/go-fetch checkout \
  --fetch \
  --treeish 3bd425248451564c04e64d4bd2b9d8bb0e6b7f5c \
- --github IcaliaLabs/go-fetch example-1
+ --github IcaliaLabs/go-fetch example-2
 ```
 
 Remember, on this and the next commands you only need to pass the user/password when *fetching* from
@@ -91,6 +91,20 @@ docker run --rm \
  --github IcaliaLabs/go-fetch README.md LICENSE:L12-L13
 ```
 
+### Go Fetch! Version
+
+We're now on the easy ones:
+
+```
+docker run --rm icalialabs/go-fetch version
+```
+
+### Go Fetch! Help / Usage:
+
+```
+docker run --rm icalialabs/go-fetch help
+```
+
 ## Why?
 
 In one of our projects, which is deployed on a Docker Swarm on Azure environment, it was crucial to
@@ -102,16 +116,16 @@ it into another process in our continuous integration pipeline:
 # You can checkout the code from a repo directly into the example-4 volume:
 docker run --rm \
 -v test-repos:/repos \
--v example-4:/example-4 \
+-v example-3:/example-3 \
 icalialabs/go-fetch checkout \
 --fetch \
---github IcaliaLabs/go-fetch example-1 origin/master
+--github IcaliaLabs/go-fetch example-3 origin/master
 
-# Now the code is ready on the example-4 volume, so we can run another tool like codeclimate:
+# Now the code is ready on the example-3 volume, so we can run another tool like codeclimate:
 docker run --rm \
---env CODECLIMATE_CODE=example-4 \
+--env CODECLIMATE_CODE=example-3 \
 --env CODECLIMATE_TMP=/tmp \
---volume example-4:/code \
+--volume example-3:/code \
 --volume /tmp:/tmp/cc \
 --volume /var/run/docker.sock:/var/run/docker.sock \
 codeclimate/codeclimate analyze -f json
